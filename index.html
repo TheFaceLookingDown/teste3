@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Secret Unlock with Audio</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000000;
+    --fg:#ffffff;
+    --muted: #aaaaaa;
+    --accent:#00ffcc;
+    --maxw:880px;
+    --audio-bg: #111;
+    --audio-fg: #00ffcc;
+  }
+  html, body {
+    height:100%;
+    margin:0;
+    font-family:"Press Start 2P", monospace;
+    background:var(--bg);
+    color:var(--fg);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:12px;
+    box-sizing:border-box;
+  }
+  .wrap{
+    max-width:var(--maxw);
+    width:100%;
+  }
+  h1{font-size:18px;margin-bottom:12px;color:var(--accent);}
+  .row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:12px;}
+  input[type="password"]{
+    background:#060606;
+    border:1px solid #333;
+    color:var(--fg);
+    padding:10px;
+    font-family:inherit;
+    font-size:12px;
+    flex:1 0 200px;
+  }
+  button{
+    background:#333; 
+    color:#fff;
+    border:none;
+    padding:10px 12px;
+    font-family:inherit;
+    cursor:pointer;
+    transition:transform 0.1s;
+  }
+  .reveal{
+    margin-top:18px;
+    padding:14px;
+    border:1px dashed #555;
+    display:none;
+    background:rgba(0,0,0,0.4);
+  }
+  .reveal img{
+    max-width:100%;
+    display:block;
+    margin:12px auto;
+  }
+  .notice{
+    font-size:11px;
+    color:var(--muted);
+    margin-top:6px;
+  }
+  footer{
+    margin-top:18px;
+    font-size:10px;
+    color:var(--muted);
+  }
+  /* --- Estilo customizado para o audio --- */
+  audio{
+    width:100%;
+    margin-top:12px;
+    background:var(--audio-bg);
+    outline:none;
+    padding:6px;
+  }
+  audio::-webkit-media-controls-panel{
+    background:var(--audio-bg);
+    color:var(--audio-fg);
+  }
+  audio::-webkit-media-controls-play-button,
+  audio::-webkit-media-controls-volume-slider{
+    filter:invert(100%);
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>SECRET UNLOCK — with Audio</h1>
+
+    <label for="password">Enter password to unlock</label>
+    <div class="row">
+      <input id="password" type="password" placeholder="type password here" />
+      <button id="submit">Unlock</button>
+    </div>
+
+    <div id="reveal" class="reveal" aria-hidden="true">
+      <h2 id="r-title"></h2>
+      <img id="r-img" alt="reveal image">
+      <div id="r-text"></div>
+      <audio id="r-audio" controls></audio>
+    </div>
+
+    <div id="msg" class="notice" aria-live="polite"></div>
+
+    <footer>Tip: host this file on GitHub Pages or any static host. Only people with the code can change the content.</footer>
+  </div>
+
+<script>
+const SECRET = 'secret.txt';
+const DEFAULT_EDITOR_JSON = {
+  title: "title.txt",
+  text: "text.txt",
+  img: "zero.jpg",
+  audio: "one.mp3"
+};
+
+function applyContent() {
+  document.getElementById('r-title').textContent = DEFAULT_EDITOR_JSON.title;
+  document.getElementById('r-text').textContent = DEFAULT_EDITOR_JSON.text;
+  const rimg = document.getElementById('r-img');
+  rimg.src = DEFAULT_EDITOR_JSON.img;
+  rimg.alt = DEFAULT_EDITOR_JSON.title || 'reveal image';
+  
+  const raudio = document.getElementById('r-audio');
+  raudio.src = DEFAULT_EDITOR_JSON.audio;
+  raudio.autoplay = false;
+}
+
+function setMsg(text, isError){
+  const el = document.getElementById('msg');
+  el.textContent = text;
+  el.style.color = isError ? '#ff6666' : '#ffffff';
+}
+
+function tryUnlock() {
+  const attempt = document.getElementById('password').value || '';
+  if (attempt === SECRET) {
+    document.getElementById('reveal').style.display = 'block';
+    document.getElementById('reveal').setAttribute('aria-hidden','false');
+    setMsg('Unlocked. Content revealed below.', false);
+  } else {
+    setMsg('Wrong password.', true);
+    const btn = document.getElementById('submit');
+    btn.style.transform = 'translateX(-6px)';
+    setTimeout(()=>btn.style.transform='translateX(0)',120);
+  }
+}
+
+document.getElementById('submit').addEventListener('click', tryUnlock);
+document.getElementById('password').addEventListener('keydown',(e)=>{if(e.key==='Enter') tryUnlock();});
+
+applyContent();
+</script>
+</body>
+</html>
